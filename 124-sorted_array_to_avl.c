@@ -1,50 +1,34 @@
 #include "binary_trees.h"
 
 /**
- * sorted_array_to_avl - builds AVL tree from the array
- * @array: pointer to the first element of the array to be converted
- * @size: the number of elements in the array
+ * create_tree - creates AVL tree with recursion
  *
- * Return: pointer to the root node of the created AVL tree
- *         NULL on failure
+ * @node: the pointer node
+ * @array: the input array of integers
+ * @size: the size of array
+ * @mode: 1 to adding on the left, 2 to adding on the right
+ * Return: no return
  */
-avl_t *sorted_array_to_avl(int *array, size_t size)
+void create_tree(avl_t **node, int *array, size_t size, int mode)
 {
-	avl_t *tree = NULL;
 	size_t middle;
 
-	if (!array)
-		return (NULL);
-	middle = (size - 1) / 2;
-	tree = binary_tree_node(NULL, array[middle]);
+	if (size == 0)
+		return;
 
-	sata_helper(&tree, array, -1, middle);
-	sata_helper(&tree, array, middle, size);
+	middle = (size / 2);
+	middle = (size % 2 == 0) ? middle - 1 : middle;
 
-	return (tree);
-}
-
-/**
- * sata_helper - helper that builds an AVL tree from the array
- * @root: double pointer to the root node of the subtree
- * @array: pointer to the first element of the array to be converted
- * @lo: the lower bound index
- * @hi: the upper bound index
- */
-void sata_helper(avl_t **root, int *array, size_t lo, size_t hi)
-{
-	avl_t *new = NULL;
-	size_t middle;
-
-	if (hi - lo > 1)
+	if (mode == 1)
 	{
-		middle = (hi - lo) / 2 + lo;
-		new = binary_tree_node(*root, array[middle]);
-		if (array[middle] > (*root)->n)
-			(*root)->right = new;
-		else if (array[middle] < (*root)->n)
-			(*root)->left = new;
-		sata_helper(&new, array, lo, middle);
-		sata_helper(&new, array, middle, hi);
+		(*node)->left = binary_tree_node(*node, array[middle]);
+		create_tree(&((*node)->left), array, middle, 1);
+		create_tree(&((*node)->left), array + middle + 1, (size - 1 - middle), 2);
+	}
+	else
+	{
+		(*node)->right = binary_tree_node(*node, array[middle]);
+		create_tree(&((*node)->right), array, middle, 1);
+		create_tree(&((*node)->right), array + middle + 1, (size - 1 - middle), 2);
 	}
 }
